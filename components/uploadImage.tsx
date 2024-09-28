@@ -92,7 +92,7 @@ export default function UploadImage({ onImageParsed }: UploadImageProps) {
       {preview && (
         <div className="mt-4">
           <h3 className="text-lg font-bold mb-2">Image Preview</h3>
-          <div className="relative w-full h-48 bg-gray-800 rounded-lg overflow-hidden">
+          <div className="relative w-full h-20 bg-gray-800 rounded-lg overflow-hidden">
             <Image 
               src={preview} 
               alt="Preview" 

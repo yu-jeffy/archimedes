@@ -12,7 +12,7 @@ import ReactMarkdown from 'react-markdown';
 
 const LatexPreview = dynamic(() => import('react-katex'), { ssr: false });
 
-export default function Component() {
+export default function Home() {
   const [problemText, setProblemText] = useState<string>("");
   const [latexExpression, setLatexExpression] = useState<string>("\\frac{a}{b}");
   const [concepts, setConcepts] = useState<string>("");
@@ -20,6 +20,9 @@ export default function Component() {
   const [explainMessageGPT4o, setExplainMessageGPT4o] = useState<string>("");
   const [solutionGPTo1, setSolutionGPTo1] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<string>("gpt-4o");
+  const [loadingConcepts, setLoadingConcepts] = useState<boolean>(false);
+  const [loadingSolution4o, setLoadingSolution4o] = useState<boolean>(false);
+  const [loadingSolutiono1, setLoadingSolutiono1] = useState<boolean>(false);
 
   const handleImageParsed = (parsedText: string) => {
     try {
@@ -32,6 +35,7 @@ export default function Component() {
   };
 
   const fetchConcepts = async () => {
+    setLoadingConcepts(true);
     try {
       const response = await fetch('/api/gptFindConcepts', {
         method: 'POST',
@@ -45,10 +49,18 @@ export default function Component() {
       setConcepts(data);
     } catch (error) {
       console.error('Error fetching concepts:', error);
+    } finally {
+      setLoadingConcepts(false);
     }
   };
 
   const fetchSolution = async () => {
+    if (selectedModel === 'gpt-4o') {
+      setLoadingSolution4o(true);
+    } else {
+      setLoadingSolutiono1(true);
+    }
+
     try {
       const endpoint = selectedModel === 'gpt-4o' ? '/api/gptSolve4o' : '/api/gptSolveo1';
       const response = await fetch(endpoint, {
@@ -68,6 +80,12 @@ export default function Component() {
       }
     } catch (error) {
       console.error('Error fetching solution:', error);
+    } finally {
+      if (selectedModel === 'gpt-4o') {
+        setLoadingSolution4o(false);
+      } else {
+        setLoadingSolutiono1(false);
+      }
     }
   };
 
@@ -79,7 +97,6 @@ export default function Component() {
           <h2 className="text-xl font-bold mb-2">Image Upload</h2>
           <UploadImage onImageParsed={handleImageParsed} />
           
-
           <h2 className="text-xl font-bold mt-4 mb-2">Problem Text</h2>
           <textarea
             value={problemText}
@@ -125,8 +142,9 @@ export default function Component() {
               <button
                 onClick={fetchConcepts}
                 className="bg-white text-black font-bold py-2 px-4 rounded-full w-full hover:bg-gray-200 transition-colors mb-2"
+                disabled={loadingConcepts}
               >
-                Explain Concepts
+                {loadingConcepts ? 'Loading...' : 'Explain Concepts'}
               </button>
               {concepts && (
                 <div className="bg-gray-800 p-4 rounded-lg overflow-auto">
@@ -140,8 +158,9 @@ export default function Component() {
           <button
             onClick={fetchSolution}
             className="bg-white text-black font-bold py-2 px-4 rounded-full mb-4 w-full hover:bg-gray-200 transition-colors"
+            disabled={selectedModel === 'gpt-4o' ? loadingSolution4o : loadingSolutiono1}
           >
-            Solve Equation with {selectedModel}
+            {selectedModel === 'gpt-4o' ? (loadingSolution4o ? 'Loading...' : 'Solve Equation with GPT-4o') : (loadingSolutiono1 ? 'Loading...' : 'Solve Equation with GPT-o1')}
           </button>
           
           <div className="bg-gray-800 p-4 rounded-lg overflow-auto flex-grow">
