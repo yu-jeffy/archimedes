@@ -9,6 +9,8 @@ import 'ace-builds/src-noconflict/mode-latex';
 import 'ace-builds/src-noconflict/theme-monokai';
 import UploadImage from '../components/uploadImage';
 import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const LatexPreview = dynamic(() => import('react-katex'), { ssr: false });
 
@@ -174,7 +176,12 @@ export default function Home() {
             ) : (
               <>
                 <h2 className="text-xl font-bold mb-2">Solution (GPT-o1)</h2>
-                <ReactMarkdown>{solutionGPTo1}</ReactMarkdown>
+                <ReactMarkdown
+                  remarkPlugins={[remarkMath]}
+                  rehypePlugins={[rehypeKatex]}
+                >
+                  {solutionGPTo1}
+                </ReactMarkdown>
               </>
             )}
           </div>

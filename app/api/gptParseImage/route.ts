@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: [
-            { type: "text", text: `Parse the math problem text and the math expression in the image and return both the problem text and the LaTeX code. 
-                For the expression, respond only with the LaTeX code, no other text, comments, styling, markdown, or anything else. Just the LaTeX code. 
+            { type: "text", text: `Parse the math problem text and the math expression in the image and return both the problem text and the LaTeX expression. 
+                For the expression, respond only with the LaTeX expression. 
                 Ensure it is formatted to work with BlockMath in the react-katex library. 
                 Do not surround the equation with brackets, dollar signs, or any other latex formatting, keep it as simple as possible.
                 Answer in this format with NOTHING ELSE, no markdown, no line breaks, no code, no formatting, just the JSON:
